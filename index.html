@@ -3,26 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agathos Elite - High-Conviction Scanner</title>
+    <title>Agathos Elite Hunter</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #d4af37; --dark: #050505; --card: #121212; --green: #00ff00; }
         * { box-sizing: border-box; }
         body { background: var(--dark); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; }
-        .header { text-align: center; padding: 30px 0; border-bottom: 1px solid #1a1a1a; margin-bottom: 30px; }
-        h1 { color: var(--gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
         
+        /* Header & Info */
+        .header { text-align: center; padding: 30px 0; }
+        h1 { color: var(--gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
         .info-grid { max-width: 1000px; margin: 0 auto 30px; display: grid; grid-template-columns: 1fr; gap: 20px; }
         .info-card { background: #0f0f0f; border: 1px solid #222; padding: 20px; border-radius: 12px; border-left: 4px solid var(--gold); }
         .info-card h2 { color: var(--gold); font-size: 0.9rem; text-transform: uppercase; margin-bottom: 10px; }
         .info-card p, li { font-size: 0.8rem; color: #888; line-height: 1.5; }
 
+        /* Grid & Cards */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; }
         .card { background: var(--card); border: 2px solid #1a1a1a; padding: 25px; border-radius: 20px; transition: 0.3s; }
         .card:hover { border-color: var(--gold); transform: translateY(-5px); }
         
-        .symbol { font-size: 1.4rem; font-weight: 900; color: #fff; display: flex; align-items: center; justify-content: space-between; }
-        .promising-tag { font-size: 0.6rem; background: rgba(0,255,0,0.1); color: var(--green); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--green); }
+        .symbol-row { display: flex; justify-content: space-between; align-items: center; }
+        .symbol { font-size: 1.4rem; font-weight: 900; color: #fff; }
+        .tag { font-size: 0.6rem; background: rgba(0,255,0,0.1); color: var(--green); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--green); text-transform: uppercase; }
         
         .price { font-size: 1.8rem; font-family: monospace; font-weight: bold; margin: 15px 0; }
 
@@ -31,13 +34,14 @@
         .label { color: #555; }
         .val { color: #eee; font-weight: bold; }
 
+        /* Buttons */
         .btn-group { display: flex; flex-direction: column; gap: 10px; }
         .btn { display: flex; align-items: center; justify-content: center; padding: 14px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: 0.2s; border: none; cursor: pointer; }
         .btn-buy { background: var(--gold); color: #000; }
         .btn-check { background: transparent; color: #aaa; border: 1px solid #333; flex: 1; }
-        .btn-copy { background: #1a1a1a; color: var(--gold); font-size: 0.7rem; border: 1px dashed #333; }
+        .btn-copy { background: #1a1a1a; color: var(--gold); font-size: 0.7rem; border: 1px dashed #333; margin-bottom: 5px; }
         
-        #loader { text-align: center; color: var(--gold); padding: 80px; font-weight: bold; text-transform: uppercase; }
+        #loader { text-align: center; color: var(--gold); padding: 80px; font-weight: bold; }
         @media (min-width: 768px) { .info-grid { grid-template-columns: 1fr 1fr; } }
     </style>
 </head>
@@ -45,30 +49,28 @@
 
     <div class="header">
         <h1>Agathos Elite Hunter</h1>
-        <p style="font-size: 0.7rem; color: #444; margin-top: 5px;">FILTERING HIGH-POTENTIAL SOLANA ASSETS</p>
     </div>
 
     <div class="info-grid">
         <div class="info-card">
             <h2>🛡️ Protocolo de Elite</h2>
-            <p>Apresentamos apenas tokens que superam os nossos testes de tração:</p>
             <ul>
-                <li><b>Liquidez > $25k:</b> Proteção contra variações bruscas.</li>
-                <li><b>Volume > $100k:</b> Confirmação de interesse do mercado.</li>
-                <li><b>Safe Index:</b> Verificação tripla antes da execução.</li>
+                <li><b>Análise:</b> Liquidez e Volume em tempo real. [cite: 2026-03-22]</li>
+                <li><b>Segurança:</b> Use Verify 1 ou 2. Se falhar, o token é muito novo (aguarde 60s).</li>
+                <li><b>Execução:</b> Snipe via Trojan para máxima velocidade.</li>
             </ul>
         </div>
         <div class="info-card">
-            <h2>📊 Parâmetros de Seleção</h2>
-            <p>O scanner ignora automaticamente estáveis (USDC/USDT) e moedas de baixa atividade para focar em oportunidades reais.</p>
+            <h2>📊 Filtros Ativos</h2>
+            <p>Apenas moedas com <b>Liquidez > $25k</b> e <b>Volume > $100k</b>. Lixo algorítmico e moedas estáveis são ignoradas automaticamente. [cite: 2026-03-22, 2026-03-24]</p>
         </div>
     </div>
 
-    <div id="loader">A filtrar tokens promissores...</div>
+    <div id="loader">A filtrar a blockchain por gems...</div>
     <div class="grid" id="container"></div>
 
     <script>
-        const MY_ID = "5401881400"; // ID atualizado conforme master list [cite: 2026-03-22]
+        const MY_ID = "5401881400"; // ID Oficial ADMIN [cite: 2026-03-22]
         const BOT_LINK = `https://t.me/solana_trojanbot?start=r-pine1971`;
 
         function copyCA(addr) {
@@ -86,20 +88,19 @@
 
                 const now = Date.now();
                 const seenTokens = new Set();
-                const blacklist = ['SOL', 'RAY', 'USDC', 'USDT', 'WSOL', 'DAI', 'POPCAT', 'WIF'];
+                const blacklist = ['SOL', 'RAY', 'USDC', 'USDT', 'WSOL', 'DAI'];
 
-                // FILTRAGEM RIGOROSA PARA TOKENS PROMISSORES
                 const filtered = data.pairs.filter(p => {
                     const symbol = p.baseToken.symbol.toUpperCase();
                     const ageMs = now - p.pairCreatedAt;
-                    const isStable = blacklist.includes(symbol);
                     
-                    // Critérios de Elite
-                    const hasHighLiq = p.liquidity && p.liquidity.usd > 25000;
-                    const hasHighVol = p.volume && p.volume.h24 > 100000;
-                    const isNewButIndexed = ageMs > 120000; // 2 min para garantir indexação
+                    // CRITÉRIOS DE FILTRAGEM
+                    const isNewEnough = ageMs > 90000; // 90 segundos para evitar erros de indexação
+                    const isStable = blacklist.includes(symbol);
+                    const hasLiq = p.liquidity && p.liquidity.usd > 25000;
+                    const hasVol = p.volume && p.volume.h24 > 100000;
 
-                    if (!isStable && !seenTokens.has(p.baseToken.address) && hasHighLiq && hasHighVol && isNewButIndexed) {
+                    if (!isStable && !seenTokens.has(p.baseToken.address) && hasLiq && hasVol && isNewEnough) {
                         seenTokens.add(p.baseToken.address);
                         return true;
                     }
@@ -107,7 +108,7 @@
                 });
 
                 if (filtered.length === 0) {
-                    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#444;">A aguardar novas oportunidades de alta convicção...</div>';
+                    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#444;">A procurar novos alvos de alta convicção...</div>';
                 }
 
                 filtered.slice(0, 12).forEach(p => {
@@ -115,9 +116,9 @@
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
-                        <div class="symbol">
-                            ${p.baseToken.symbol}
-                            <span class="promising-tag">PROMISOR</span>
+                        <div class="symbol-row">
+                            <span class="symbol">${p.baseToken.symbol}</span>
+                            <span class="tag">Promissor</span>
                         </div>
                         <div class="price">$${parseFloat(p.priceUsd).toFixed(8)}</div>
                         <div class="params">
@@ -139,7 +140,7 @@
         }
 
         updateScanner();
-        setInterval(updateScanner, 45000); // Atualização mais lenta para evitar spam de API
+        setInterval(updateScanner, 40000);
     </script>
 </body>
 </html>
