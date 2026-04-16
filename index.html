@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGATHOS | Solana Intelligence Terminal</title>
+    <style>
+        :root { --gold: #d4af37; --dark: #080808; --card: #121212; --white: #ffffff; }
+        body { background: var(--dark); color: var(--white); font-family: 'Inter', -apple-system, sans-serif; margin: 0; padding: 20px; line-height: 1.6; }
+        
+        .header { text-align: center; padding: 40px 0; }
+        h1 { color: var(--gold); font-size: 2.2rem; letter-spacing: 5px; margin: 0; }
+        .desc { color: #666; font-size: 0.9rem; margin-top: 10px; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* Simple How-to-use */
+        .steps { max-width: 800px; margin: 0 auto 40px; display: flex; justify-content: space-around; font-size: 0.8rem; color: #aaa; border: 1px solid #222; padding: 15px; border-radius: 8px; }
+        .step-item { display: flex; align-items: center; gap: 8px; }
+        .step-num { color: var(--gold); font-weight: bold; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .card { background: var(--card); border: 1px solid #222; padding: 20px; border-radius: 12px; transition: 0.2s; }
+        .card:hover { border-color: var(--gold); }
+        
+        .token-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .symbol { font-size: 1.2rem; font-weight: bold; color: var(--gold); }
+        .liq { color: #00ff00; font-size: 0.75rem; font-weight: bold; }
+        
+        .price { font-size: 1.4rem; font-family: monospace; margin-bottom: 20px; color: #eee; }
+        
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { display: block; text-align: center; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.8rem; }
+        .btn-buy { background: var(--gold); color: #000; }
+        .btn-check { background: transparent; color: #fff; border: 1px solid #444; }
+        
+        #loader { text-align: center; color: var(--gold); margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>AGATHOS TERMINAL</h1>
+        <div class="desc">Elite Solana Tokens Scanner</div>
+    </div>
+
+    <div class="steps">
+        <div class="step-item"><span class="step-num">01</span> CHOOSE TOKEN</div>
+        <div class="step-item"><span class="step-num">02</span> CHECK SECURITY</div>
+        <div class="step-item"><span class="step-num">03</span> TRADE VIA BOT</div>
+    </div>
+
+    <div id="loader">Fetching live blockchain data...</div>
+    <div class="grid" id="container"></div>
+
+    <script>
+        // REPLACE WITH YOUR REFERRAL ID
+        const MY_ID = "5401881400"; 
+        const BOT_LINK = `https://t.me/TrojanBot?start=r-${MY_ID}`;
+
+        async function updateScanner() {
+            try {
+                const res = await fetch('https://api.dexscreener.com/latest/dex/search?q=solana');
+                const data = await res.json();
+                const container = document.getElementById('container');
+                document.getElementById('loader').style.display = 'none';
+                container.innerHTML = '';
+
+                // Filtering: High Liquidity & Active Volume only
+                const filtered = data.pairs.filter(p => p.liquidity && p.liquidity.usd > 15000 && p.volume.h24 > 30000);
+
+                filtered.slice(0, 12).forEach(p => {
+                    const addr = p.baseToken.address;
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="token-info">
+                            <span class="symbol">${p.baseToken.symbol}</span>
+                            <span class="liq">LIQ: $${Math.round(p.liquidity.usd).toLocaleString()}</span>
+                        </div>
+                        <div class="price">$${p.priceUsd}</div>
+                        <div class="btn-group">
+                            <a href="https://rugcheck.xyz/tokens/${addr}" target="_blank" class="btn btn-check">VERIFY</a>
+                            <a href="${BOT_LINK}-${addr}" target="_blank" class="btn btn-buy">TRADE NOW</a>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) { console.error("API Error"); }
+        }
+
+        updateScanner();
+        setInterval(updateScanner, 30000);
+    </script>
+</body>
+</html>
