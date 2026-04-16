@@ -3,125 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agathos Elite Scanner - Real-Time Solana Hunter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <title>Agathos Elite - High-Conviction Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #d4af37; --dark: #050505; --card: #121212; --white: #eee; --green: #00ff00; }
+        :root { --gold: #d4af37; --dark: #050505; --card: #121212; --green: #00ff00; }
         * { box-sizing: border-box; }
-        body { background: var(--dark); color: var(--white); font-family: 'Inter', sans-serif; margin: 0; padding: 15px; }
+        body { background: var(--dark); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; }
+        .header { text-align: center; padding: 30px 0; border-bottom: 1px solid #1a1a1a; margin-bottom: 30px; }
+        h1 { color: var(--gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
         
-        .header { text-align: center; padding: 40px 0 20px; }
-        h1 { color: var(--gold); font-size: 2rem; font-weight: 900; letter-spacing: 3px; margin: 0; text-transform: uppercase; }
-
-        .info-container { max-width: 1000px; margin: 0 auto 40px; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .info-card { background: #0f0f0f; border: 1px solid #222; padding: 25px; border-radius: 16px; border-left: 4px solid var(--gold); }
-        .info-card h2 { color: var(--gold); font-size: 1.1rem; margin: 0 0 15px; text-transform: uppercase; }
-        .info-card p { font-size: 0.9rem; color: #aaa; line-height: 1.6; margin: 0; }
-        .info-card ul { margin: 15px 0 0; padding-left: 20px; color: #888; font-size: 0.85rem; }
-        .info-card li { margin-bottom: 8px; }
+        .info-grid { max-width: 1000px; margin: 0 auto 30px; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .info-card { background: #0f0f0f; border: 1px solid #222; padding: 20px; border-radius: 12px; border-left: 4px solid var(--gold); }
+        .info-card h2 { color: var(--gold); font-size: 0.9rem; text-transform: uppercase; margin-bottom: 10px; }
+        .info-card p, li { font-size: 0.8rem; color: #888; line-height: 1.5; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; }
         .card { background: var(--card); border: 2px solid #1a1a1a; padding: 25px; border-radius: 20px; transition: 0.3s; }
-        .card:hover { border-color: var(--gold); }
+        .card:hover { border-color: var(--gold); transform: translateY(-5px); }
         
-        .token-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .symbol { font-size: 1.5rem; font-weight: 900; color: #fff; }
-        .price { font-size: 1.8rem; font-family: monospace; font-weight: bold; margin: 10px 0; color: #fff; }
+        .symbol { font-size: 1.4rem; font-weight: 900; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+        .promising-tag { font-size: 0.6rem; background: rgba(0,255,0,0.1); color: var(--green); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--green); }
+        
+        .price { font-size: 1.8rem; font-family: monospace; font-weight: bold; margin: 15px 0; }
 
         .params { background: #000; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #1a1a1a; }
         .param-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 8px; }
         .label { color: #555; }
-        .val { color: var(--white); font-weight: bold; }
+        .val { color: #eee; font-weight: bold; }
 
-        /* GRUPO DE BOTÕES ATUALIZADO */
         .btn-group { display: flex; flex-direction: column; gap: 10px; }
-        .verify-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn { display: flex; align-items: center; justify-content: center; padding: 14px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: 0.2s; }
-        .btn-buy { background: var(--gold); color: #000; width: 100%; }
-        .btn-check { background: transparent; color: #eee; border: 1px solid #333; font-size: 0.75rem; }
-        .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
-
-        #loader { text-align: center; color: var(--gold); padding: 100px 0; font-weight: bold; }
-
-        @media (min-width: 768px) { .info-container { grid-template-columns: 1fr 1fr; } }
+        .btn { display: flex; align-items: center; justify-content: center; padding: 14px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: 0.2s; border: none; cursor: pointer; }
+        .btn-buy { background: var(--gold); color: #000; }
+        .btn-check { background: transparent; color: #aaa; border: 1px solid #333; flex: 1; }
+        .btn-copy { background: #1a1a1a; color: var(--gold); font-size: 0.7rem; border: 1px dashed #333; }
+        
+        #loader { text-align: center; color: var(--gold); padding: 80px; font-weight: bold; text-transform: uppercase; }
+        @media (min-width: 768px) { .info-grid { grid-template-columns: 1fr 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>AGATHOS ELITE SCANNER</h1>
+        <h1>Agathos Elite Hunter</h1>
+        <p style="font-size: 0.7rem; color: #444; margin-top: 5px;">FILTERING HIGH-POTENTIAL SOLANA ASSETS</p>
     </div>
 
-    <div class="info-container">
+    <div class="info-grid">
         <div class="info-card">
-            <h2>🛡️ Trading Protocol</h2>
-            <p>This terminal filters the Solana blockchain to identify tokens with institutional-grade liquidity and active volume.</p>
+            <h2>🛡️ Protocolo de Elite</h2>
+            <p>Apresentamos apenas tokens que superam os nossos testes de tração:</p>
             <ul>
-                <li><b>Step 1:</b> Analyze the 24h Volume and Liquidity depth.</li>
-                <li><b>Step 2:</b> Click 'Verify' to scan for <b>Mint Revoke</b> and <b>LP Burn</b>. (Use Verify 2 if 1 fails).</li>
-                <li><b>Step 3:</b> Execute via Trojan for 0.01ms execution speed.</li>
+                <li><b>Liquidez > $25k:</b> Proteção contra variações bruscas.</li>
+                <li><b>Volume > $100k:</b> Confirmação de interesse do mercado.</li>
+                <li><b>Safe Index:</b> Verificação tripla antes da execução.</li>
             </ul>
         </div>
-
         <div class="info-card">
-            <h2>📊 Current Scan Filters</h2>
-            <p>To ensure user safety, our algorithm applies the following hard-filters in real-time:</p>
-            <ul>
-                <li><b>Min Liquidity:</b> $15,000 (Avoids instant rug-pulls).</li>
-                <li><b>Uniqueness:</b> Duplicate pools are automatically merged.</li>
-                <li><b>Auto-Blacklist:</b> Stablecoins and main ecosystem tokens are hidden.</li>
-            </ul>
+            <h2>📊 Parâmetros de Seleção</h2>
+            <p>O scanner ignora automaticamente estáveis (USDC/USDT) e moedas de baixa atividade para focar em oportunidades reais.</p>
         </div>
     </div>
 
-    <div id="loader">SEARCHING FOR NEW GEMS...</div>
+    <div id="loader">A filtrar tokens promissores...</div>
     <div class="grid" id="container"></div>
 
     <script>
-        const MY_ID = "pine1971"; 
-        const BOT_LINK = `https://t.me/solana_trojanbot?start=r-${MY_ID}`;
+        const MY_ID = "5401881400"; // ID atualizado conforme master list [cite: 2026-03-22]
+        const BOT_LINK = `https://t.me/solana_trojanbot?start=r-pine1971`;
+
+        function copyCA(addr) {
+            navigator.clipboard.writeText(addr);
+            alert("Contrato Copiado!");
+        }
 
         async function updateScanner() {
             try {
-                const res = await fetch('https://api.dexscreener.com/latest/dex/search?q=solana%20pool');
+                const res = await fetch('https://api.dexscreener.com/latest/dex/search?q=solana%20trending');
                 const data = await res.json();
                 const container = document.getElementById('container');
                 document.getElementById('loader').style.display = 'none';
                 container.innerHTML = '';
 
+                const now = Date.now();
                 const seenTokens = new Set();
-                const blacklist = ['SOL', 'RAY', 'USDC', 'USDT', 'WSOL', 'DAI'];
+                const blacklist = ['SOL', 'RAY', 'USDC', 'USDT', 'WSOL', 'DAI', 'POPCAT', 'WIF'];
 
+                // FILTRAGEM RIGOROSA PARA TOKENS PROMISSORES
                 const filtered = data.pairs.filter(p => {
                     const symbol = p.baseToken.symbol.toUpperCase();
-                    const isBlacklisted = blacklist.includes(symbol);
-                    const isNew = !seenTokens.has(p.baseToken.address);
-                    const hasLiq = p.liquidity && p.liquidity.usd > 15000;
+                    const ageMs = now - p.pairCreatedAt;
+                    const isStable = blacklist.includes(symbol);
                     
-                    if (!isBlacklisted && isNew && hasLiq) {
+                    // Critérios de Elite
+                    const hasHighLiq = p.liquidity && p.liquidity.usd > 25000;
+                    const hasHighVol = p.volume && p.volume.h24 > 100000;
+                    const isNewButIndexed = ageMs > 120000; // 2 min para garantir indexação
+
+                    if (!isStable && !seenTokens.has(p.baseToken.address) && hasHighLiq && hasHighVol && isNewButIndexed) {
                         seenTokens.add(p.baseToken.address);
                         return true;
                     }
                     return false;
                 });
 
+                if (filtered.length === 0) {
+                    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#444;">A aguardar novas oportunidades de alta convicção...</div>';
+                }
+
                 filtered.slice(0, 12).forEach(p => {
                     const addr = p.baseToken.address;
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
-                        <div class="token-header"><span class="symbol">${p.baseToken.symbol}</span></div>
-                        <div class="price">$${p.priceUsd}</div>
+                        <div class="symbol">
+                            ${p.baseToken.symbol}
+                            <span class="promising-tag">PROMISOR</span>
+                        </div>
+                        <div class="price">$${parseFloat(p.priceUsd).toFixed(8)}</div>
                         <div class="params">
-                            <div class="param-row"><span class="label">Liquidity Pool</span><span class="val" style="color:#0f0">$${Math.round(p.liquidity.usd).toLocaleString()}</span></div>
+                            <div class="param-row"><span class="label">Liquidez</span><span class="val" style="color:var(--green)">$${Math.round(p.liquidity.usd).toLocaleString()}</span></div>
                             <div class="param-row"><span class="label">Volume 24h</span><span class="val">$${Math.round(p.volume.h24).toLocaleString()}</span></div>
                         </div>
                         <div class="btn-group">
-                            <div class="verify-row">
+                            <button onclick="copyCA('${addr}')" class="btn btn-copy">📋 Copiar Contrato (CA)</button>
+                            <div style="display:flex;gap:8px;">
                                 <a href="https://rugcheck.xyz/tokens/${addr}" target="_blank" class="btn btn-check">Verify 1</a>
                                 <a href="https://dexscreener.com/solana/${addr}" target="_blank" class="btn btn-check">Verify 2</a>
                             </div>
-                            <a href="${BOT_LINK}-${addr}" target="_blank" class="btn btn-buy">Snipe Now</a>
+                            <a href="${BOT_LINK}-${addr}" target="_blank" class="btn btn-buy">Snipe Agora</a>
                         </div>
                     `;
                     container.appendChild(card);
@@ -130,7 +139,7 @@
         }
 
         updateScanner();
-        setInterval(updateScanner, 30000);
+        setInterval(updateScanner, 45000); // Atualização mais lenta para evitar spam de API
     </script>
 </body>
 </html>
