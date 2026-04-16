@@ -3,139 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agathos Elite Hunter - Solana Terminal</title>
+    <title>Agathos Elite Hunter</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #d4af37; --dark: #050505; --card: #121212; --green: #00ff00; }
         * { box-sizing: border-box; }
         body { background: var(--dark); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; }
-        
-        .header { text-align: center; padding: 30px 0; }
+        .header { text-align: center; padding: 20px 0; }
         h1 { color: var(--gold); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
-        
-        .info-grid { max-width: 1000px; margin: 0 auto 30px; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .info-card { background: #0f0f0f; border: 1px solid #222; padding: 20px; border-radius: 12px; border-left: 4px solid var(--gold); }
-        .info-card h2 { color: var(--gold); font-size: 0.9rem; text-transform: uppercase; margin-bottom: 10px; }
-        .info-card p, li { font-size: 0.85rem; color: #888; line-height: 1.5; }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; }
-        .card { background: var(--card); border: 2px solid #1a1a1a; padding: 25px; border-radius: 20px; transition: 0.3s; }
-        .card:hover { border-color: var(--gold); transform: translateY(-5px); }
-        
-        .symbol-row { display: flex; justify-content: space-between; align-items: center; }
-        .symbol { font-size: 1.4rem; font-weight: 900; }
-        .tag { font-size: 0.6rem; background: rgba(0,255,0,0.1); color: var(--green); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--green); text-transform: uppercase; }
-        
-        .price { font-size: 1.8rem; font-family: monospace; font-weight: bold; margin: 15px 0; }
-
-        .params { background: #000; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #1a1a1a; }
-        .param-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 8px; }
-        .label { color: #555; }
-        .val { color: #eee; font-weight: bold; }
-
-        .btn-group { display: flex; flex-direction: column; gap: 10px; }
-        .btn { display: flex; align-items: center; justify-content: center; padding: 14px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: 0.2s; border: none; cursor: pointer; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; max-width: 1100px; margin: 20px auto; }
+        .card { background: var(--card); border: 2px solid #1a1a1a; padding: 20px; border-radius: 15px; transition: 0.3s; }
+        .card:hover { border-color: var(--gold); }
+        .symbol-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .symbol { font-size: 1.2rem; font-weight: 900; color: var(--gold); }
+        .ca-box { background: #000; padding: 8px; border-radius: 5px; font-size: 0.65rem; color: #666; font-family: monospace; word-break: break-all; margin-bottom: 15px; border: 1px solid #222; }
+        .price { font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; }
+        .params { background: #000; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-size: 0.8rem; }
+        .param-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .btn-group { display: flex; flex-direction: column; gap: 8px; }
+        .btn { display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; border: none; cursor: pointer; }
         .btn-buy { background: var(--gold); color: #000; }
         .btn-check { background: transparent; color: #aaa; border: 1px solid #333; flex: 1; }
-        .btn-copy { background: #1a1a1a; color: var(--gold); font-size: 0.7rem; border: 1px dashed #333; }
-        
-        #loader { text-align: center; color: var(--gold); padding: 80px; font-weight: bold; }
-        @media (min-width: 768px) { .info-grid { grid-template-columns: 1fr 1fr; } }
+        #loader { text-align: center; color: var(--gold); padding: 50px; }
     </style>
 </head>
 <body>
-
-    <div class="header">
-        <h1>Agathos Elite Hunter</h1>
-    </div>
-
-    <div class="info-grid">
-        <div class="info-card">
-            <h2>🛡️ Trading Protocol</h2>
-            <p>This terminal filters the Solana blockchain to identify tokens with institutional-grade liquidity and active volume [cite: 2026-03-22].</p>
-            <ul>
-                <li><b>Step 1:</b> Analyze the 24h Volume and Liquidity depth [cite: 2020-03-22].</li>
-                <li><b>Step 2:</b> Click 'Verify' to scan for safety. If it fails, the token is too new (wait 60s).</li>
-                <li><b>Step 3:</b> Execute via Trojan for 0.01ms execution speed [cite: 2026-03-22].</li>
-            </ul>
-        </div>
-        <div class="info-card">
-            <h2>📊 Active Scan Filters</h2>
-            <p>To ensure user safety, our algorithm applies the following hard-filters in real-time:</p>
-            <ul>
-                <li><b>Min Liquidity:</b> $15,000 (Avoids instant rug-pulls) [cite: 2026-03-22, 2026-03-24].</li>
-                <li><b>Min Volume:</b> $50,000 (Ensures market interest) [cite: 2026-03-22].</li>
-                <li><b>Auto-Blacklist:</b> Stablecoins and main ecosystem tokens are hidden [cite: 2026-03-24].</li>
-            </ul>
-        </div>
-    </div>
-
-    <div id="loader">SCANNING BLOCKCHAIN FOR ELITE GEMS...</div>
+    <div class="header"><h1>Agathos Elite Hunter</h1></div>
+    <div id="loader">SEARCHING FOR LIVE TOKENS...</div>
     <div class="grid" id="container"></div>
 
     <script>
         const BOT_LINK = `https://t.me/solana_trojanbot?start=r-pine1971`;
 
-        function copyCA(addr) {
-            navigator.clipboard.writeText(addr);
-            alert("Contract Address (CA) Copied!");
-        }
-
         async function updateScanner() {
             try {
-                const res = await fetch('https://api.dexscreener.com/latest/dex/search?q=solana%20pool');
+                const res = await fetch('https://api.dexscreener.com/latest/dex/search?q=solana');
                 const data = await res.json();
                 const container = document.getElementById('container');
                 document.getElementById('loader').style.display = 'none';
                 container.innerHTML = '';
 
-                const seenTokens = new Set();
-                const blacklist = ['SOL', 'RAY', 'USDC', 'USDT', 'WSOL', 'DAI'];
-
+                const seen = new Set();
                 const filtered = data.pairs.filter(p => {
-                    const symbol = p.baseToken.symbol.toUpperCase();
-                    const hasLiq = p.liquidity && p.liquidity.usd > 15000;
-                    const hasVol = p.volume && p.volume.h24 > 50000;
-
-                    if (!blacklist.includes(symbol) && !seenTokens.has(p.baseToken.address) && hasLiq && hasVol) {
-                        seenTokens.add(p.baseToken.address);
+                    const liq = p.liquidity?.usd || 0;
+                    const vol = p.volume?.h24 || 0;
+                    if (liq > 15000 && vol > 50000 && !seen.has(p.baseToken.address)) {
+                        seen.add(p.baseToken.address);
                         return true;
                     }
                     return false;
                 });
 
-                if (filtered.length === 0) {
-                    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#444;">Waiting for high-conviction opportunities...</div>';
-                }
-
-                filtered.slice(0, 12).forEach(p => {
+                filtered.slice(0, 10).forEach(p => {
                     const addr = p.baseToken.address;
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
-                        <div class="symbol-row">
-                            <span class="symbol">${p.baseToken.symbol}</span>
-                            <span class="tag">Promising</span>
-                        </div>
+                        <div class="symbol-row"><span class="symbol">${p.baseToken.symbol}</span></div>
+                        <div class="ca-box">${addr}</div>
                         <div class="price">$${parseFloat(p.priceUsd).toFixed(8)}</div>
                         <div class="params">
-                            <div class="param-row"><span class="label">Liquidity</span><span class="val" style="color:var(--green)">$${Math.round(p.liquidity.usd).toLocaleString()}</span></div>
-                            <div class="param-row"><span class="label">Volume 24h</span><span class="val">$${Math.round(p.volume.h24).toLocaleString()}</span></div>
+                            <div class="param-row"><span>Liquidity:</span><span style="color:var(--green)">$${Math.round(p.liquidity.usd).toLocaleString()}</span></div>
+                            <div class="param-row"><span>Volume:</span><span>$${Math.round(p.volume.h24).toLocaleString()}</span></div>
                         </div>
                         <div class="btn-group">
-                            <button onclick="copyCA('${addr}')" class="btn btn-copy">📋 Copy Contract (CA)</button>
-                            <div style="display:flex;gap:8px;">
-                                <a href="https://rugcheck.xyz/tokens/${addr}" target="_blank" class="btn btn-check">Verify 1</a>
-                                <a href="https://birdeye.so/token/${addr}?chain=solana" target="_blank" class="btn btn-check">Verify 2</a>
+                            <div style="display:flex;gap:5px;">
+                                <a href="https://rugcheck.xyz/tokens/${addr}" target="_blank" class="btn btn-check">RugCheck</a>
+                                <a href="https://dexscreener.com/solana/${addr}" target="_blank" class="btn btn-check">DexView</a>
                             </div>
-                            <a href="${BOT_LINK}-${addr}" target="_blank" class="btn btn-buy">Snipe Now</a>
+                            <a href="${BOT_LINK}-${addr}" target="_blank" class="btn btn-buy">Snipe on Trojan</a>
                         </div>
                     `;
                     container.appendChild(card);
                 });
-            } catch (err) { console.error(err); }
+            } catch (e) { console.error(e); }
         }
-
         updateScanner();
         setInterval(updateScanner, 30000);
     </script>
