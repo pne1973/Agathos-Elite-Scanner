@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Hunter Pro - Live Feed</title>
+    <title>Crypto Hunter Pro v1.0</title>
     <style>
         :root {
             --primary: #00ff88;
@@ -15,151 +15,185 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .header {
+            width: 100%;
+            max-width: 600px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #222;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        .live-indicator {
-            color: var(--primary);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .btn-refresh {
+            background: #2a2d3a;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-weight: 500;
+            transition: 0.3s;
         }
 
-        .dot {
-            height: 8px;
-            width: 8px;
-            background-color: var(--primary);
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 10px var(--primary);
-        }
+        .btn-refresh:hover { background: #3a3d4a; transform: translateY(-2px); }
+        .spinning { animation: rotate 1s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .token-grid {
-            display: grid;
-            gap: 15px;
-        }
+        .token-grid { width: 100%; max-width: 600px; display: grid; gap: 15px; }
 
         .token-card {
             background: var(--card);
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 16px;
+            padding: 20px;
             border: 1px solid #222;
-            animation: fadeIn 0.5s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .token-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .network-tag { background: #333; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; color: #aaa; text-transform: uppercase; }
+        .token-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .network-badge { background: #333; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; color: #aaa; text-transform: uppercase; }
         
-        .stats {
+        .score-display { text-align: right; }
+        .score-val { font-size: 1.4rem; font-weight: 800; }
+
+        .stats-row {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-            font-size: 0.9rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 18px 0;
         }
 
-        .stat-item { background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #222; }
-
-        .btn-group { display: flex; gap: 10px; }
-        button {
-            flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s;
+        .stat-box {
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #222;
         }
-        .btn-dex { background: var(--primary); color: #000; }
-        .btn-copy { background: #2a2d3a; color: #fff; }
 
-        #loading { text-align: center; padding: 40px; color: #666; }
+        .stat-label { font-size: 0.75rem; color: #888; display: block; margin-bottom: 4px; }
+        .stat-value { font-weight: 600; font-size: 0.95rem; }
+
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            background: var(--primary);
+            color: #000;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover { filter: brightness(1.1); }
+
+        #status-msg { margin-top: 50px; color: #666; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Crypto Hunter 🎯</h1>
-        <div class="live-indicator"><span class="dot"></span> Live DEX Feed</div>
+        <h1 style="margin:0; font-size: 1.5rem;">Crypto Hunter 🎯</h1>
+        <button class="btn-refresh" id="refreshBtn" onclick="loadData()">
+            <span id="refreshIcon">🔄</span> Atualizar
+        </button>
     </div>
 
-    <div id="loading">A ligar aos nós da Blockchain...</div>
-    <div class="token-grid" id="feed"></div>
+    <div id="status-msg">A iniciar conexão com a rede...</div>
+    <div class="token-grid" id="tokenFeed"></div>
 
     <script>
-        const feedElement = document.getElementById('feed');
-        const loadingElement = document.getElementById('loading');
+        // Lógica de Pontuação de Segurança
+        function getSecurityScore(pair) {
+            let score = 30; // Base
+            const liq = pair.liquidity?.usd || 0;
+            const vol = pair.volume?.h24 || 0;
 
-        // Função para calcular Score Baseado em Dados Reais
-        function calculateScore(pair) {
-            let score = 50; // Base
-            if (pair.liquidity?.usd > 50000) score += 20;
-            if (pair.volume?.h24 > 100000) score += 15;
-            if (pair.boosts?.active > 0) score += 15;
+            if (liq > 150000) score += 40;
+            else if (liq > 50000) score += 25;
+            else if (liq > 10000) score += 10;
+
+            if (vol > 500000) score += 30;
+            else if (vol > 100000) score += 15;
+
             return Math.min(score, 100);
         }
 
-        async function fetchLatestTokens() {
-            try {
-                // Endpoint da DexScreener para os tokens com boosts/recentes
-                const response = await fetch('https://api.dexscreener.com/token-profiles/latest/v1');
-                const data = await response.json();
-                
-                loadingElement.style.display = 'none';
-                feedElement.innerHTML = '';
+        async function loadData() {
+            const feed = document.getElementById('tokenFeed');
+            const msg = document.getElementById('status-msg');
+            const icon = document.getElementById('refreshIcon');
+            
+            icon.classList.add('spinning');
+            msg.style.display = 'block';
+            msg.innerText = "Sincronizando com DexScreener...";
 
-                // Limitamos aos primeiros 10 para performance
-                data.slice(0, 10).forEach(token => {
-                    const score = calculateScore(token);
-                    const color = score > 70 ? '#00ff88' : (score > 40 ? '#ffbb00' : '#ff4444');
-                    
-                    const card = `
+            try {
+                // Chama a tua própria Serverless Function
+                const response = await fetch('/api/get-tokens');
+                const data = await response.json();
+
+                if (!data.pairs) throw new Error("Sem dados");
+
+                feed.innerHTML = '';
+                msg.style.display = 'none';
+
+                data.pairs.slice(0, 12).forEach(pair => {
+                    const score = getSecurityScore(pair);
+                    const color = score > 75 ? '#00ff88' : (score > 45 ? '#ffbb00' : '#ff4444');
+
+                    feed.innerHTML += `
                         <div class="token-card">
                             <div class="token-header">
                                 <div>
-                                    <span class="network-tag">${token.chainId}</span>
-                                    <h3 style="margin: 5px 0;">${token.symbol}</h3>
+                                    <span class="network-badge">${pair.chainId}</span>
+                                    <h2 style="margin: 5px 0 0 0; font-size: 1.2rem;">${pair.baseToken.symbol}</h2>
                                 </div>
-                                <div style="text-align: right">
-                                    <span style="color: ${color}; font-weight: bold; font-size: 1.2rem;">${score}/100</span>
-                                    <br><small style="color: #666">Trust Score</small>
+                                <div class="score-display">
+                                    <span class="score-val" style="color: ${color}">${score}</span>
+                                    <span style="font-size: 0.7rem; color: #666; display: block;">TRUST SCORE</span>
                                 </div>
-                            </div>
-                            
-                            <div class="stats">
-                                <div class="stat-item"><strong>Rede:</strong> ${token.chainId}</div>
-                                <div class="stat-item"><strong>Bio:</strong> ${token.description ? 'Sim' : 'Não'}</div>
                             </div>
 
-                            <div class="btn-group">
-                                <button class="btn-dex" onclick="window.open('${token.url}', '_blank')">Ver Gráfico</button>
-                                <button class="btn-copy" onclick="navigator.clipboard.writeText('${token.tokenAddress}'); alert('Endereço Copiado!')">Copiar CA</button>
+                            <div class="stats-row">
+                                <div class="stat-box">
+                                    <span class="stat-label">Liquidez</span>
+                                    <span class="stat-value">$${Math.round(pair.liquidity?.usd || 0).toLocaleString()}</span>
+                                </div>
+                                <div class="stat-box">
+                                    <span class="stat-label">Volume 24h</span>
+                                    <span class="stat-value">$${Math.round(pair.volume?.h24 || 0).toLocaleString()}</span>
+                                </div>
                             </div>
+
+                            <button class="btn-action" onclick="window.open('${pair.url}', '_blank')">
+                                Analisar Gráfico e CA
+                            </button>
                         </div>
                     `;
-                    feedElement.innerHTML += card;
                 });
-            } catch (error) {
-                loadingElement.innerText = "Erro ao carregar dados. Tente novamente.";
-                console.error(error);
+            } catch (err) {
+                msg.innerText = "Erro ao carregar dados. Verifica se a pasta /api está no GitHub.";
+                msg.style.color = "var(--danger)";
+            } finally {
+                icon.classList.remove('spinning');
             }
         }
 
-        // Atualiza a cada 30 segundos
-        fetchLatestTokens();
-        setInterval(fetchLatestTokens, 30000);
+        // Carregamento inicial
+        loadData();
     </script>
 </body>
 </html>
