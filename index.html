@@ -1,225 +1,165 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Social v33.12 - Crypto Monitor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>Crypto Hunter Pro - Live Feed</title>
     <style>
         :root {
-            --google-blue: #4285F4;
-            --google-red: #EA4335;
-            --google-yellow: #FBBC05;
-            --google-green: #34A853;
-            --bg-gray: #F8F9FA;
-            --text-dark: #202124;
+            --primary: #00ff88;
+            --bg: #0a0b10;
+            --card: #161821;
+            --text: #ffffff;
+            --danger: #ff4444;
+            --warning: #ffbb00;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-gray);
-            color: var(--text-dark);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Header & Monetization */
-        #top-banner {
-            width: 100%;
-            height: 60px;
-            background: #fff;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        /* Main Container */
-        .container {
-            width: 100%;
-            max-width: 600px;
             padding: 20px;
-            box-sizing: border-box;
         }
 
-        .google-card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        /* Crypto Monitor UI */
-        .monitor-header {
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
         }
 
-        .live-dot {
-            height: 10px;
-            width: 10px;
-            background-color: var(--google-red);
+        .live-indicator {
+            color: var(--primary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            height: 8px;
+            width: 8px;
+            background-color: var(--primary);
             border-radius: 50%;
             display: inline-block;
-            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 10px var(--primary);
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
+        .token-grid {
+            display: grid;
+            gap: 15px;
         }
 
-        .token-item {
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            transition: transform 0.2s;
+        .token-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #222;
+            animation: fadeIn 0.5s ease;
         }
 
-        .token-item:hover { transform: scale(1.01); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .token-meta { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .badge { font-size: 10px; padding: 3px 6px; border-radius: 4px; font-weight: bold; }
-        .solana { background: #14F195; color: #000; }
-        .base { background: #0052FF; color: #fff; }
-
-        .score-bar { background: #eee; height: 8px; border-radius: 4px; margin: 10px 0; overflow: hidden; }
-        .score-fill { height: 100%; }
-
-        /* Economy & Stats */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-box { text-align: center; padding: 10px; background: #f1f3f4; border-radius: 8px; }
-
-        /* Buttons */
-        .btn-main {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            background: var(--google-blue);
-            color: #fff;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 10px;
+        .token-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .network-tag { background: #333; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; color: #aaa; text-transform: uppercase; }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+            font-size: 0.9rem;
         }
 
-        .btn-outline {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--google-blue);
-            border-radius: 6px;
-            background: transparent;
-            color: var(--google-blue);
-            margin-top: 5px;
-            cursor: pointer;
+        .stat-item { background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #222; }
+
+        .btn-group { display: flex; gap: 10px; }
+        button {
+            flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
+        .btn-dex { background: var(--primary); color: #000; }
+        .btn-copy { background: #2a2d3a; color: #fff; }
+
+        #loading { text-align: center; padding: 40px; color: #666; }
     </style>
 </head>
 <body>
 
-    <div id="top-banner">
-        <strong>AD: Monetização Apex Social</strong>
+    <div class="header">
+        <h1>Crypto Hunter 🎯</h1>
+        <div class="live-indicator"><span class="dot"></span> Live DEX Feed</div>
     </div>
 
-    <div class="container">
-        <div class="google-card">
-            <h3>Bem-vindo, User #5401881400</h3>
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <small>Saldo XP</small>
-                    <div id="user-xp">15,240</div>
-                </div>
-                <div class="stat-box">
-                    <small>Valor (EUR)</small>
-                    <div id="user-eur">€ 15.24</div>
-                </div>
-            </div>
-            <button class="btn-main" onclick="requestWithdrawal()">Sacar (Mín. 5000 XP)</button>
-        </div>
-
-        <div class="google-card">
-            <div class="monitor-header">
-                <h3>Monitor de Gemas</h3>
-                <span><span class="live-dot"></span> LIVE</span>
-            </div>
-            
-            <div id="token-feed">
-                <div class="token-item">
-                    <p style="text-align: center; color: #666;">Buscando novos tokens na rede...</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="admin-panel" class="google-card" style="border-left: 5px solid var(--google-red);">
-            <h4 style="color: var(--google-red);">Painel Administrativo</h4>
-            <p>Total Usuários: 1,240 | Saques Pendentes: 3</p>
-            <button class="btn-outline" style="color: var(--google-red); border-color: var(--google-red);">Gerenciar Pagamentos</button>
-        </div>
-    </div>
+    <div id="loading">A ligar aos nós da Blockchain...</div>
+    <div class="token-grid" id="feed"></div>
 
     <script>
-        // Configurações Técnicas v33.12
-        const USER_ID = "5401881400";
-        const XP_RATE = 0.001; // 1000 XP = 1 EUR
-        
-        // Simulação de Monitoramento de Tokens
-        const mockTokens = [
-            { name: "$NEURAL", net: "SOL", liq: 45000, vol: 12000, score: 92, ca: "0x123...abc" },
-            { name: "$BASE-JUMP", net: "BASE", liq: 15000, vol: 3000, score: 65, ca: "0x456...def" },
-            { name: "$PEPE-FLY", net: "SOL", liq: 8000, vol: 1500, score: 40, ca: "0x789...ghi" }
-        ];
+        const feedElement = document.getElementById('feed');
+        const loadingElement = document.getElementById('loading');
 
-        function renderFeed() {
-            const feed = document.getElementById('token-feed');
-            feed.innerHTML = '';
-
-            mockTokens.forEach(token => {
-                const scoreColor = token.score > 80 ? '#34A853' : (token.score > 50 ? '#FBBC05' : '#EA4335');
-                const netClass = token.net === 'SOL' ? 'solana' : 'base';
-
-                feed.innerHTML += `
-                    <div class="token-item">
-                        <div class="token-meta">
-                            <span class="badge ${netClass}">${token.net}</span>
-                            <strong>${token.name}</strong>
-                            <small>Score: ${token.score}/100</small>
-                        </div>
-                        <div class="score-bar">
-                            <div class="score-fill" style="width: ${token.score}%; background: ${scoreColor};"></div>
-                        </div>
-                        <div style="font-size: 12px; color: #555;">
-                            Liq: $${token.liq.toLocaleString()} | Vol (5m): $${token.vol.toLocaleString()}
-                        </div>
-                        <button class="btn-outline" onclick="copyCA('${token.ca}')">Copiar Contrato</button>
-                    </div>
-                `;
-            });
+        // Função para calcular Score Baseado em Dados Reais
+        function calculateScore(pair) {
+            let score = 50; // Base
+            if (pair.liquidity?.usd > 50000) score += 20;
+            if (pair.volume?.h24 > 100000) score += 15;
+            if (pair.boosts?.active > 0) score += 15;
+            return Math.min(score, 100);
         }
 
-        function copyCA(ca) {
-            alert("Endereço do contrato copiado: " + ca);
+        async function fetchLatestTokens() {
+            try {
+                // Endpoint da DexScreener para os tokens com boosts/recentes
+                const response = await fetch('https://api.dexscreener.com/token-profiles/latest/v1');
+                const data = await response.json();
+                
+                loadingElement.style.display = 'none';
+                feedElement.innerHTML = '';
+
+                // Limitamos aos primeiros 10 para performance
+                data.slice(0, 10).forEach(token => {
+                    const score = calculateScore(token);
+                    const color = score > 70 ? '#00ff88' : (score > 40 ? '#ffbb00' : '#ff4444');
+                    
+                    const card = `
+                        <div class="token-card">
+                            <div class="token-header">
+                                <div>
+                                    <span class="network-tag">${token.chainId}</span>
+                                    <h3 style="margin: 5px 0;">${token.symbol}</h3>
+                                </div>
+                                <div style="text-align: right">
+                                    <span style="color: ${color}; font-weight: bold; font-size: 1.2rem;">${score}/100</span>
+                                    <br><small style="color: #666">Trust Score</small>
+                                </div>
+                            </div>
+                            
+                            <div class="stats">
+                                <div class="stat-item"><strong>Rede:</strong> ${token.chainId}</div>
+                                <div class="stat-item"><strong>Bio:</strong> ${token.description ? 'Sim' : 'Não'}</div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button class="btn-dex" onclick="window.open('${token.url}', '_blank')">Ver Gráfico</button>
+                                <button class="btn-copy" onclick="navigator.clipboard.writeText('${token.tokenAddress}'); alert('Endereço Copiado!')">Copiar CA</button>
+                            </div>
+                        </div>
+                    `;
+                    feedElement.innerHTML += card;
+                });
+            } catch (error) {
+                loadingElement.innerText = "Erro ao carregar dados. Tente novamente.";
+                console.error(error);
+            }
         }
 
-        function requestWithdrawal() {
-            alert("Solicitação de saque enviada para processamento via PayPal.");
-        }
-
-        // Inicialização
-        window.onload = () => {
-            renderFeed();
-            console.log("Apex Social v33.12 carregado para ID: " + USER_ID);
-        };
+        // Atualiza a cada 30 segundos
+        fetchLatestTokens();
+        setInterval(fetchLatestTokens, 30000);
     </script>
 </body>
 </html>
